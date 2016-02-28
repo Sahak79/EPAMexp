@@ -149,49 +149,50 @@ $(document).ready(function(){
     });
 
     // put together expression and check when '=' clicked call calculatorAjaxRequest()
+    var ajaxReceived = false;
     var ajaxCalculator = function() {
         var el = $(this);
         if (el.text() == '=') {
-            calculatorAjaxRequest();
+            var displayInput = $('.calculator input[type=text]');
+            var xhr;
+            if (window.XMLHttpRequest) {
+                // Not a Microsoft browser
+                xhr = new XMLHttpRequest();
+            } else if  (window.ActiveXObject) {
+                // Microsoft browser
+                xhr = new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xhr.onreadystatechange = function(){
+                var result = xhr.responseText;
+                var resultJSON = JSON.parse(result);
+                if (xhr.readyState == 4) {
+                    if (xhr.status == 200) {
+                        if(resultJSON.message != 'success'){ // error while processing JSON at server side
+                            $('#exception').text(resultJSON.message);
+                        }else{ // otherwise show result
+                            ajaxReceived = true;
+                            displayInput.val(resultJSON.evalResult);
+                        }
+                    } else { // error related with request sending
+                        $('#exception').text(
+                            resultJSON.status+"-"
+                            +resultJSON.message+"-"
+                            +resultJSON.path);
+                    }
+                }
+            };
+            xhr.open("POST", "http://localhost:8080/calc");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify({expression: displayInput.val()}));
         } else if (el.text() == 'cl') {
             $('.calculator input[type=text]').val('');
         } else {
+            if(ajaxReceived){
+                $('.calculator input[type=text]').val('');
+                ajaxReceived = false;
+            }
             refreshVal(el.text());
         }
-    };
-
-    // we want to send ajax and get expression result from server
-    var calculatorAjaxRequest = function() {
-        var displayInput = $('.calculator input[type=text]');
-        var xhr;
-        if (window.XMLHttpRequest) {
-            // Not a Microsoft browser
-            xhr = new XMLHttpRequest();
-        } else if  (window.ActiveXObject) {
-            // Microsoft browser
-            xhr = new ActiveXObject("Microsoft.XMLHTTP");
-        }
-        xhr.onreadystatechange = function(){
-            var result = xhr.responseText;
-            var resultJSON = JSON.parse(result);
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    if(resultJSON.message != 'success'){ // error while processing JSON at server side
-                        $('#exception').text(resultJSON.message);
-                    }else{ // otherwise show result
-                        displayInput.val(resultJSON.evalResult);
-                    }
-                } else { // error related with request sending
-                    $('#exception').text(
-                        resultJSON.status+"-"
-                        +resultJSON.message+"-"
-                        +resultJSON.path);
-                }
-            }
-        };
-        xhr.open("POST", "http://localhost:8080/calc");
-        xhr.setRequestHeader("Content-Type", "application/json");
-        xhr.send(JSON.stringify({expression: displayInput.val()}));
     };
 
 });
