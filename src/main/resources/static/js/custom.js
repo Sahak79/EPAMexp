@@ -38,14 +38,15 @@ $(document).ready(function(){
             this.currentVal = '';
         },
         checkNaN: function(exp){
-            $('#exception').text(''); // after first error we need clear error container
+            var exception = $('#exception');
+            exception.text(''); // after first error we need clear error container
             try {
                 if(isNaN(exp)){// if we have NaN output throw exception
                     throw "Please enter valid expression, click on 'Clr' and try again.";
                 }
             }
             catch(err) {
-                $('#exception').text(err);
+                exception.text(err);
             }
             return exp; // if we don't need to add NaN result in display then we can move this to }else{ section of if() statment
         },
