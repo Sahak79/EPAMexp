@@ -45,7 +45,7 @@ public class HomeController {
             result = engine.eval(parsedExpressionString.replace("\"", ""));
 
         } catch (Exception e) {
-            message = "There is some issue while evaluating your expression";
+            message = "There is issue while evaluating your expression";
             log.error("Error while evaluating expression",e);
         }
 

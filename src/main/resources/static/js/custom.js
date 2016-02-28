@@ -170,9 +170,10 @@ $(document).ready(function(){
                         if(resultJSON.message != 'success'){ // error while processing JSON at server side
                             $('#exception').text(resultJSON.message);
                         }else{ // otherwise show result
-                            ajaxReceived = true;
+                            $('#exception').text('');
                             displayInput.val(resultJSON.evalResult);
                         }
+                        ajaxReceived = true;
                     } else { // error related with request sending
                         $('#exception').text(
                             resultJSON.status+"-"
