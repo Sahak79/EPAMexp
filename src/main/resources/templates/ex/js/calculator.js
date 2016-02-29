@@ -6,8 +6,7 @@ var CalculatorModule = (function($) {
         modalContainer = $('.modal-container');
         $(window).on('click', function(e) {
             if ($(modalContainer.selector).hasClass('open')) {
-                console.log(e.target);
-                if ($(e.target).hasClass('modal-container')) {
+                if ($(e.target).hasClass('modal-container') || $(e.target).hasClass('close-btn')) {
                     $(modalContainer.selector).slideUp(200);
                     $(modalContainer.selector).removeClass('open');
                 }
@@ -19,6 +18,17 @@ var CalculatorModule = (function($) {
         $(modalContainer.selector).slideDown(200);
         $(modalContainer.selector).addClass('open');
     }
+
+
+
+
+
+
+
+
+
+
+
 
     return {
         init : init,
