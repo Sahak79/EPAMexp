@@ -3,9 +3,8 @@
   <component name="Encoding" useUTFGuessing="true" native2AsciiForPropertiesFiles="false">
     <file url="file://$PROJECT_DIR$" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/.mvn" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/calculator.iml" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/myapplication.log" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/pom.xml" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/src" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
   </component>
 </project>

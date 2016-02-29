@@ -1,3 +1,22 @@
+(function($, window){
+    return{
+
+    };
+}(jQuery, window));
+
+var calculator = (function(){
+   var checkIsNan = function(){
+
+   };
+
+
+    return {
+        add: function(){
+            checkIsNan()
+        }
+   };
+}());
+
 $(document).ready(function(){
     var Calculator = {
         runningTotal : '',

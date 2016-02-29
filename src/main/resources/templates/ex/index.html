@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Calculator</title>
+        <link rel="stylesheet" href="css/calculator.css" />
+        <script type="text/javascript" src="js/jquery-1.12.1.min.js"></script>
+        <script type="text/javascript" src="js/calculator.js"></script>
+
+    </head>
+    <body>
+        <div class="modal-container">
+            <div class="modal">
+                <section class="container">
+                    <div class="calculator">
+                        <input type="text" disabled="disabled" />
+                        <div class="row">
+                            <div class="key">1</div>
+                            <div class="key">2</div>
+                            <div class="key">3</div>
+                            <div class="key last action">x</div>
+                        </div>
+                        <div class="row">
+                            <div class="key">4</div>
+                            <div class="key">5</div>
+                            <div class="key">6</div>
+                            <div class="key last action">+</div>
+                        </div>
+                        <div class="row">
+                            <div class="key">7</div>
+                            <div class="key">8</div>
+                            <div class="key">9</div>
+                            <div class="key last action">-</div>
+                        </div>
+                        <div class="row">
+                            <div class="key">.</div>
+                            <div class="key">0</div>
+                            <div class="key action instant">cl</div>
+                            <div class="key last action">/</div>
+                        </div>
+                        <div class="row equals">
+                            <div class="key last action instant">=</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <div class="btn-container">
+            <button class="btn" onclick="CalculatorModule.openCalculatorModal()" >calculator</button>
+        </div>
+
+    </body>
+</html>

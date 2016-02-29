@@ -4,6 +4,7 @@ import com.epam.model.CalculatorResultModel;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -13,10 +14,10 @@ import javax.script.ScriptEngineManager;
 /**
  * Created by Sahak_Babayan on 2/26/2016.
  */
-@RestController
-public class HomeController {
+@Controller
+public class CalculatorController {
 
-    static Logger log = Logger.getLogger(HomeController.class);
+    static Logger log = Logger.getLogger(CalculatorController.class);
 
     @RequestMapping(value = "/")
     public ModelAndView index(){
@@ -28,7 +29,7 @@ public class HomeController {
         return new ModelAndView("ajaxCalculator");
     }
 
-    @CrossOrigin
+
     @RequestMapping(value = "/calc", method = RequestMethod.POST, consumes = "application/json", produces = "application/json")
     public @ResponseBody
     CalculatorResultModel evaluate(@RequestBody String JSONExpression){
