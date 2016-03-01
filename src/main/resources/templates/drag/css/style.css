@@ -8,12 +8,12 @@ body{
     position: absolute;
     cursor: pointer;
 }
-#target1 {
+.red {
     background: #cc1f26;
 }
-#target2{
+.blue{
     background: #2130cc;
 }
-#target3 {
+.orange{
     background: #cc6428;
 }
