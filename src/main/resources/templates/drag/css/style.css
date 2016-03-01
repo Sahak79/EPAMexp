@@ -1,0 +1,19 @@
+body{
+    margin: 0;
+}
+
+.target{
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    cursor: pointer;
+}
+#target1 {
+    background: #cc1f26;
+}
+#target2{
+    background: #2130cc;
+}
+#target3 {
+    background: #cc6428;
+}
