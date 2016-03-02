@@ -4,19 +4,27 @@ var DragModule = (function() {
     var currentElement;
     var deltaPX;
     var deltaPY;
+    var initialZIndexItem = 0;
 
     function init(){
         for (var i = 0; i < elements.length; i++) {
-            document.getElementsByClassName('target')[i].addEventListener("mousedown", eleMouseDown, false);
+            elements[i].addEventListener("mousedown", eleMouseDown, false);
         }
         document.querySelector('body').onkeydown = function (e) {
             if ( !e.metaKey ) {
                 e.preventDefault();
             }
             if(e.keyCode == 9){
-                console.log('tab clicked');
+                resetZIndex();
+                elements[initialZIndexItem].style.zIndex = elements.length;
+                incrementInitialZIndexItemIndex();
+
             }
         };
+    }
+
+    function incrementInitialZIndexItemIndex() {
+        initialZIndexItem < elements.length - 1 ? initialZIndexItem++ : initialZIndexItem = 0;
     }
 
     function resetZIndex() {
