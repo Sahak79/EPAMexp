@@ -107,30 +107,30 @@ var CalculatorModule = (function($) {
         $(window).on('click', function(e) {
             if ($(modalContainer.selector).hasClass('open')) {
                 if ($(e.target).hasClass('modal-container') || $(e.target).hasClass('close-btn')) {
-                    closeCalculatorModal();
+                    close();
                 } else if($(e.target).hasClass('key')) {
                     CalculatorHandler(e.target);
                 }
             }
         });
         $(document).keyup(function(e) {
-            if (e.keyCode == 27) { // escape key close modal
-                closeCalculatorModal();
-            } else if(e.keyCode == 13) {
+            if (e.keyCode == 27) { // 'esc' key close modal
+                close();
+            } else if(e.keyCode == 13) { // 'enter' key close modal
                 $('.equals div').click();
             }
         });
 
     }
 
-    function closeCalculatorModal() {
+    function close() {
         $(modalContainer.selector).slideUp(200);
         $(modalContainer.selector).removeClass('open');
         $('.calculator input[type=text]').val(''); // reset display content
         Calculator.clear(); // reset calculator
     }
 
-    function openCalculatorModal() {
+    function open() {
         $(modalContainer.selector).slideDown(200);
         $(modalContainer.selector).addClass('open');
         $('h3.text-center').text('simple calculator');
@@ -138,7 +138,7 @@ var CalculatorModule = (function($) {
 
     return {
         init : init,
-        openCalculatorModal : openCalculatorModal
+        open : open
     };
 
 })(jQuery);
@@ -337,7 +337,7 @@ var AJAXCalculatorModule = (function($) {
         $(window).on('click', function(e) {
             if ($(modalContainer.selector).hasClass('open')) {
                 if ($(e.target).hasClass('modal-container') || $(e.target).hasClass('close-btn')) {
-                    closeCalculatorModal();
+                    close();
                 }
                 else if($(e.target).hasClass('key')) {
                     CalculatorHandler(e.target);
@@ -346,7 +346,7 @@ var AJAXCalculatorModule = (function($) {
         });
         $(document).keyup(function(e) {
             if (e.keyCode == 27) { // escape key close modal
-                closeCalculatorModal();
+                close();
             } else if(e.keyCode == 13) {
                 $('.equals div').click();
             } else if(e.keyCode == 106) {
@@ -362,14 +362,14 @@ var AJAXCalculatorModule = (function($) {
 
     }
 
-    function closeCalculatorModal() {
+    function close() {
         $(modalContainer.selector).slideUp(200);
         $(modalContainer.selector).removeClass('open');
         $('.calculator input[type=text]').val(''); // reset display content
         Calculator.clear(); // reset calculator
     }
 
-    function openCalculatorModal() {
+    function open() {
         isAJAX = false;
         $(modalContainer.selector).slideDown(200);
         $(modalContainer.selector).addClass('open');
@@ -385,7 +385,7 @@ var AJAXCalculatorModule = (function($) {
 
     return {
         init : init,
-        openCalculatorModal : openCalculatorModal,
+        open : open,
         openAJAXCalculatorModal : openAJAXCalculatorModal
     };
 
