@@ -18,7 +18,6 @@ var DragModule = (function() {
                 resetZIndex();
                 elements[initialZIndexItem].style.zIndex = elements.length;
                 incrementInitialZIndexItemIndex();
-
             }
         };
     }
@@ -29,7 +28,7 @@ var DragModule = (function() {
 
     function resetZIndex() {
         for (var i = 0; i < elements.length; i++) {
-            document.getElementsByClassName('target')[i].style.zIndex = i;
+            elements[i].style.zIndex = i;
         }
     }
 
