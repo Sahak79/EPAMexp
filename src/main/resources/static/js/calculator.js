@@ -1,23 +1,10 @@
-(function($, window){
-    return{
+var CalculatorModule = (function($) {
 
-    };
-}(jQuery, window));
+    var isAJAX = false;
+    var executeOperationType;
 
-var calculator = (function(){
-   var checkIsNan = function(){
+    var modalContainer; //TODO this variable may be explicit selector string
 
-   };
-
-
-    return {
-        add: function(){
-            checkIsNan()
-        }
-   };
-}());
-
-$(document).ready(function(){
     var Calculator = {
         runningTotal : '',
         currentVal : '',
@@ -34,18 +21,6 @@ $(document).ready(function(){
                 this.currentVal += val;
             }
         },
-        add: function() {
-            this.runningTotal = this.checkNaN(parseFloat(this.runningTotal) + parseFloat(this.currentVal));
-        },
-        subtract: function() {
-            this.runningTotal = this.checkNaN(parseFloat(this.runningTotal) - parseFloat(this.currentVal));
-        },
-        multiply: function() {
-            this.runningTotal = this.checkNaN(parseFloat(this.runningTotal) * parseFloat(this.currentVal));
-        },
-        divide: function() {
-            this.runningTotal = this.checkNaN(parseFloat(this.runningTotal) / parseFloat(this.currentVal));
-        },
         clear: function() {
             this.runningTotal = '';
             this.currentVal = '';
@@ -56,67 +31,48 @@ $(document).ready(function(){
         resetCurrentVal: function () {
             this.currentVal = '';
         },
-        checkNaN: function(exp){
-            var exception = $('#exception');
-            exception.text(''); // after first error we need clear error container
-            try {
-                if(isNaN(exp)){// if we have NaN output throw exception
-                    throw "Please enter valid expression, click on 'Clr' and try again.";
-                }
-            }
-            catch(err) {
-                exception.text(err);
-            }
-            return exp; // if we don't need to add NaN result in display then we can move this to }else{ section of if() statment
-        },
         calculate: function() {
             this.executeAction = '';
             this.currentVal = '';
             return this.runningTotal;
         },
         getAction: function(val) {
-            var method = '';
-            switch (val) {
-                case '+':
-                    method = Calculator.add;
-                    break;
-                case '-':
-                    method = Calculator.subtract;
-                    break;
-                case 'x':
-                    method = Calculator.multiply;
-                    break;
-                case '/':
-                    method = Calculator.divide;
-                    break;
-            }
-
-            return method;
+            isAJAX ? executeOperationType = val : ''; // if calculator type is ajax then set this to initial action operation
+            return function(){
+                this.runningTotal = eval(this.runningTotal+val+this.currentVal);
+            };
         },
         setDisplay: function() {
             return this.display = this.currentVal == '' ? this.runningTotal : this.currentVal;
         }
     };
 
-    var onButtonPress = function () {
-        var that = $(this);
-        var action = that.hasClass('action');
-        var instant = that.hasClass('instant');
-        var val = that.text();
+    function CalculatorHandler(target) {
+        var message = $('#message');
+        var calculatorDisplay = $('.calculator input[type=text]');
+        message.text(''); // reset message content
+
+        var key = $(target);
+        var action = key.hasClass('action');
+        var instant = key.hasClass('instant');
+        var val = key.text();
         if (!action) {
             //No action means the button pressed is a number not an "action"
             Calculator.adjustTotals(val);
         } else if(!instant) {
-            //A action button was pressed. Store the action so it can be executed
-            if (Calculator.executeAction != ''){
-                Calculator.executeAction();
-            }
 
+            //A action button was pressed. Store the action so it can be executed
+            if (Calculator.executeAction != '' && Calculator.currentVal != ""){
+                if(isAJAX) {
+                    AJAXCalculator();
+                } else {
+                    Calculator.executeAction();
+                }
+            }
             // when action called after any number multiple times do nothing
             if (!Calculator.setCurrentVal && Calculator.runningTotal == "") {
                 return;
             }
-
             Calculator.executeAction = Calculator.getAction(val);
             Calculator.setCurrentVal = true;
             Calculator.resetCurrentVal();
@@ -125,95 +81,141 @@ $(document).ready(function(){
             if (Calculator.executeAction != '') {
                 Calculator.executeAction();
             }
-
             switch (val) {
                 case 'cl':
-                    method = Calculator.clear();
+                    Calculator.clear();
                     break;
                 case '=':
-                    method = Calculator.calculate();
+                    isAJAX ? AJAXCalculator() : Calculator.calculate();
                     break;
             }
         }
-
         Calculator.setDisplay();
-    };
-
-    // check if function called with 'val' parameter then act for ajax calculator
-    var refreshVal = function(val) {
-        var displayInput = $('.calculator input[type=text]');
-        if(!val){ // refreshVal() case
-            displayInput.val(Calculator.display);
-        }else{ // refreshVal(1) case
-            displayInput.val(displayInput.val()+val);
+        // check for NaN result and reset calculator settings also show error message
+        if(isNaN(Calculator.display)){
+            Calculator.clear();
+            message.text('Please enter valid expression.');
         }
-    };
+        // show result in display
+        calculatorDisplay.val(Calculator.display);
+    }
 
-    // for simple calculator
-    $('div.key').click(function() {
-        //We want this to call onButtonPress function
-        if($('.calculator').hasClass('ajax')){
-            ajaxCalculator.call(this);
-        }else{
-            onButtonPress.call(this);
-            refreshVal();
+    function AJAXCalculator() {
+        var json = JSON.stringify({
+            runningTotal  : Calculator.runningTotal,
+            currentVal    : Calculator.currentVal,
+            executeAction : executeOperationType
+        });
+
+        var xhr;
+        if (window.XMLHttpRequest) {
+            // Not a Microsoft browser
+            xhr = new XMLHttpRequest();
+        } else if  (window.ActiveXObject) {
+            // Microsoft browser
+            xhr = new ActiveXObject("Microsoft.XMLHTTP");
         }
-
-    });
-
-    // call '=' action when enter key pressed
-    $(document).on("keypress", function (e) {
-        if (e.keyCode == 13) {
-            $('.equals>div').click();
-        }
-    });
-
-    // put together expression and check when '=' clicked call calculatorAjaxRequest()
-    var ajaxReceived = false;
-    var ajaxCalculator = function() {
-        var el = $(this);
-        if (el.text() == '=') {
-            var displayInput = $('.calculator input[type=text]');
-            var xhr;
-            if (window.XMLHttpRequest) {
-                // Not a Microsoft browser
-                xhr = new XMLHttpRequest();
-            } else if  (window.ActiveXObject) {
-                // Microsoft browser
-                xhr = new ActiveXObject("Microsoft.XMLHTTP");
-            }
-            xhr.onreadystatechange = function(){
-                var result = xhr.responseText;
-                var resultJSON = JSON.parse(result);
-                if (xhr.readyState == 4) {
-                    if (xhr.status == 200) {
-                        if(resultJSON.message != 'success'){ // error while processing JSON at server side
-                            $('#exception').text(resultJSON.message);
-                        }else{ // otherwise show result
-                            $('#exception').text('');
-                            displayInput.val(resultJSON.evalResult);
-                        }
-                        ajaxReceived = true;
-                    } else { // error related with request sending
-                        $('#exception').text(
-                            resultJSON.status+"-"
-                            +resultJSON.message+"-"
-                            +resultJSON.path);
+        xhr.onreadystatechange = function(){
+            var result = xhr.responseText;
+            var resultJSON = JSON.parse(result);
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    if(resultJSON.message != 'success'){ // error while processing JSON at server side
+                        $('#message').text(resultJSON.message);
+                    }else{ // otherwise show result
+                        $('#exception').text('');
+                        $('.calculator input[type=text]').val(resultJSON.evalResult);
+                        Calculator.runningTotal = resultJSON.evalResult;
+                        Calculator.setCurrentVal = true;
+                        Calculator.resetCurrentVal();
                     }
+                    ajaxReceived = true;
+                } else { // error related with request sending
+                    $('#message').text(
+                        resultJSON.status+" "
+                        +resultJSON.message+" "
+                        +resultJSON.path);
                 }
-            };
-            xhr.open("POST", "http://localhost:8080/calc");
-            xhr.setRequestHeader("Content-Type", "application/json");
-            xhr.send(JSON.stringify({expression: displayInput.val()}));
-        } else if (el.text() == 'cl') {
-            $('.calculator input[type=text]').val('');
-        } else {
-            if(ajaxReceived){
-                $('.calculator input[type=text]').val('');
-                ajaxReceived = false;
             }
-            refreshVal(el.text());
-        }
+        };
+        xhr.open("POST", "http://localhost:8080/calc");
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send(json);
+
+        console.log(json);
+    }
+
+    function numberValidator() {
+        $(function() {
+            $('.calculator').on('keydown', 'input[type=text]', function(e){
+                -1!==$.inArray(e.keyCode,[46,8,9,27,13,110,190])||/65|67|86|88/
+                    .test(e.keyCode)&&(!0===e.ctrlKey||!0===e.metaKey)||35<=e.keyCode&&40>=e.keyCode||(e.shiftKey||48>e.keyCode||57<e.keyCode)&&(96>e.keyCode||105<e.keyCode)&&e.preventDefault()
+            });
+        });
+    }
+
+    function init() {
+        numberValidator();
+        modalContainer = $('.modal-container');
+        $(window).on('click', function(e) {
+            if ($(modalContainer.selector).hasClass('open')) {
+                if ($(e.target).hasClass('modal-container') || $(e.target).hasClass('close-btn')) {
+                    closeCalculatorModal();
+                }
+                else if($(e.target).hasClass('key')) {
+                    CalculatorHandler(e.target);
+                }
+            }
+        });
+        $(document).keyup(function(e) {
+            if (e.keyCode == 27) { // escape key close modal
+                closeCalculatorModal();
+            } else if(e.keyCode == 13) {
+                $('.equals div').click();
+            } else if(e.keyCode == 106) {
+                $('#multiply').click();
+            } else if(e.keyCode == 107) {
+                $('#plus').click();
+            } else if(e.keyCode == 109) {
+                $('#minus').click();
+            } else if(e.keyCode == 111) {
+                $('#divide').click();
+            }
+        });
+
+    }
+
+    function closeCalculatorModal() {
+        $(modalContainer.selector).slideUp(200);
+        $(modalContainer.selector).removeClass('open');
+        $('.calculator input[type=text]').val(''); // reset display content
+        Calculator.clear(); // reset calculator
+    }
+
+    function openCalculatorModal() {
+        isAJAX = false;
+        $(modalContainer.selector).slideDown(200);
+        $(modalContainer.selector).addClass('open');
+        $('h3.text-center').text('simple calculator');
+    }
+
+    function openAJAXCalculatorModal() {
+        isAJAX = true;
+        $(modalContainer.selector).slideDown(200);
+        $(modalContainer.selector).addClass('open');
+        $('h3.text-center').text('ajax calculator');
+    }
+
+    return {
+        init : init,
+        openCalculatorModal : openCalculatorModal,
+        openAJAXCalculatorModal : openAJAXCalculatorModal
     };
 
-});
+})(jQuery);
+
+CalculatorModule.init();
+
+
+
+

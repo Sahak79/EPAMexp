@@ -39,11 +39,13 @@ public class CalculatorController {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode actualObj = mapper.readTree(JSONExpression);
-            String parsedExpressionString = actualObj.get("expression").asText();
+            String runningTotal = actualObj.get("runningTotal").asText();
+            String currentVal = actualObj.get("currentVal").asText();
+            String executeAction = actualObj.get("executeAction").asText();
 
             ScriptEngineManager manager = new ScriptEngineManager();
             ScriptEngine engine = manager.getEngineByName("js");
-            result = engine.eval(parsedExpressionString.replace("\"", ""));
+            result = engine.eval(runningTotal+executeAction+currentVal);
 
         } catch (Exception e) {
             message = "There is issue while evaluating your expression";
